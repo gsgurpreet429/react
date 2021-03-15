@@ -1,11 +1,14 @@
 import React from 'react';
 import { Card, CardImg, CardText, CardBody, CardTitle, Button, Col, Row } from 'reactstrap';
 import { ListGroupItemText, BreadcrumbItem, Breadcrumb } from 'reactstrap';
-import { Modal, ModalHeader, ModalBody, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+
+
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => (val) && (val.length >= len);
 
@@ -106,13 +109,17 @@ class CommentForm extends React.Component {
 function RenderDish({ dish }) {
     if (dish != null) {
         return (
-            <Card>
-                <CardImg width="100%" object src={baseUrl + dish.image} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
+            <FadeTransform in transformProps={{
+                exitTransform: 'scale(0.5) translateY(-50%)'
+            }}>
+                <Card>
+                    <CardImg width="100%" object src={baseUrl + dish.image} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </FadeTransform>
         );
     } else {
         return <div></div>
@@ -124,18 +131,25 @@ function RenderComments({ comments, postComment, dishId }) {
         const rate = comments.map((comment) => {
             return (
                 <div key={comment.id}>
+
                     <ListGroupItemText>{comment.comment}</ListGroupItemText>
                     <ListGroupItemText>-- {comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</ListGroupItemText>
+
                 </div>
             );
         });
 
         return (
             <div>
-                <h4>Comments</h4>
-                {rate}
+                <Stagger in>
+                    <h4>Comments</h4>
+                    <Fade in>
+                        {rate}
+                    </Fade>
+                </Stagger>
                 <CommentForm dishId={dishId} postComment={postComment} />
-            </div>
+
+            </div >
         );
     } else {
         return (
